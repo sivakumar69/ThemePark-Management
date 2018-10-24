@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Made By www.w3schools.com - No Copyright -->
+  <title>Themepark Management</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link href="/css/entry-tickets.css" rel="stylesheet" type="text/css">
+  <link href="css/font-awesome/css/font-awesome.css" rel="stylesheet">
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+</head>
+<body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#myPage">Themepark Management</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#pricing">PRICE INFO</a></li>
+        <li><a id="bookingForm" href="#booking">TICKET BOOKING</a></li>
+        <li><a href="#"><span th:text="${loggedUserName}" class="fa fa-user-circle fa-lg" aria-hidden="true"></span></a></li>
+        <li><a href="/logout"><span class="fa fa-power-off fa-lg" aria-hidden="true">&nbsp logout</span></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+<footer class="container-fluid text-center">
+  <a href="#myPage" title="To Top">
+   <!--  <span><strong>......</strong></span> -->
+  </a>
+  <p>Themepark Management App Made By <a href="https://www.w3schools.com" title="Visit w3schools">Group 21</a></p>
+</footer>

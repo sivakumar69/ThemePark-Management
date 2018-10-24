@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Theme Made By www.w3schools.com - No Copyright -->
+<title>Themepark Management</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link href="/css/entry-tickets.css" rel="stylesheet" type="text/css">
+<link href="css/font-awesome/css/font-awesome.css" rel="stylesheet">
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+</head>
+<body id="myPage" data-spy="scroll" data-target=".navbar"
+	data-offset="60">
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#myPage">Themepark Management</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#pricing">PRICE INFO</a></li>
+					<li><a id="bookingForm" href="#booking">TICKET BOOKING</a></li>
+					<li><a href="#"><span th:text="${loggedUserName}"
+							class="fa fa-user-circle fa-lg" aria-hidden="true"></span></a></li>
+					<li><a href="/logout"><span class="fa fa-power-off fa-lg"
+							aria-hidden="true">&nbsp logout</span></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="jumbotron text-center">
+		<h1>Entry Ticket Booking Service</h1>
+		<p>Choose an entry ticket, enter customer details to complete
+			entry level ticket booking</p>
+	</div>
+
+	<!-- Container (Pricing Section) -->
+	<div id="pricing" class="container-fluid">
+		<div class="text-center">
+			<h2>Price Info</h2>
+			<h4>Choose a category of ticket</h4>
+		</div>
+		<div class="row slideanim">
+			<div class="col-sm-4 col-xs-12"
+				th:each="element : ${ticketsInformation}">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1 th:text="${element.key}">element.key</h1>
+					</div>
+					<div class="panel-body">
+						<p>
+							<strong>Covers Following Rides</strong>
+						</p>
+						<div
+							th:each="item : ${#strings.arraySplit(element.value.RIDES, ',')}">
+							<p th:text="${item}"></p>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<h3 th:text="${element.value.PRICE}">$19</h3>
+						<h4>per Individual</h4>
+						<button
+							th:onclick="|addSelectedTicketCategory('${element.key}', '${element.value.PRICE}')|"
+							class="btn btn-lg">ADD</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Container (Contact Section) -->
+	<div id="booking" class="container-fluid bg-grey">
+		<h2 class="text-center">Ticket Booking</h2>
+		<form method="post" th:action="@{/book-ticket}">
+			<div class="row">
+				<div class="col-sm-5 slideanim">
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<input class="form-control" id="firstName" name="firstName"
+								placeholder="First Name" type="text" required>
+						</div>
+						<div class="col-sm-6 form-group">
+							<input class="form-control" id="lastName" name="lastName"
+								placeholder="Last Name" type="text" required>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<input class="form-control" id="mobileNumber" name="mobileNumber"
+								placeholder="Mobile Number" type="text" required>
+						</div>
+						<div class="col-sm-6 form-group">
+							<input onChange="updatePrice()" class="form-control" id="quantity" name="quantity"
+								placeholder="Quantity" type="Number" required>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-7 slideanim">
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<input class="form-control" id="ticketCategory"
+								name="ticketCategory" placeholder="Ticket Category" type="text"
+								required>
+						</div>
+						<div class="col-sm-6 form-group">
+							<input class="form-control" id="price" name="price"
+								placeholder="Price" type="text" required>
+						</div>
+					</div>
+					<!-- <textarea class="form-control" id="comments" name="comments" placeholder="Comment" rows="5"></textarea> -->
+					<br>
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<button class="btn btn-default pull-right" type="submit">Book</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<footer class="container-fluid text-center">
+		<a href="#myPage" title="To Top"> <!--  <span><strong>......</strong></span> -->
+		</a>
+		<p>
+			Themepark Management App Made By <a href="https://www.w3schools.com"
+				title="Visit w3schools">Group 21</a>
+		</p>
+	</footer>
+
+	<script>
+	var currentPrice;
+$(document).ready(function(){
+
+	
+  // Add smooth scrolling to all links in navbar + footer link
+  $(".navbar a, footer a[href='#myPage']").on('click', function(event) {
+    // Make sure this.hash has a value before overriding default behavior
+    if (this.hash !== "") {
+      // Prevent default anchor click behavior
+      event.preventDefault();
+
+      // Store hash
+      var hash = this.hash;
+
+      // Using jQuery's animate() method to add smooth page scroll
+      // The optional number (900) specifies the number of milliseconds it takes to scroll to the specified area
+      $('html, body').animate({
+        scrollTop: $(hash).offset().top
+      }, 900, function(){
+   
+        // Add hash (#) to URL when done scrolling (default click behavior)
+        window.location.hash = hash;
+      });
+    } // End if
+  });
+  
+  $(window).scroll(function() {
+    $(".slideanim").each(function(){
+      var pos = $(this).offset().top;
+
+      var winTop = $(window).scrollTop();
+        if (pos < winTop + 600) {
+          $(this).addClass("slide");
+        }
+    });
+  });
+})
+
+
+const addSelectedTicketCategory = (categoryName, price) => {
+	console.log(categoryName+' '+price)
+	document.getElementById('ticketCategory').value = categoryName
+	document.getElementById('quantity').value = 1
+	document.getElementById('price').value = price
+	currentPrice = price
+	$('#bookingForm').click();
+	};
+	
+	const updatePrice = () => {
+		var qty = document.getElementById('quantity').value
+		if(qty < 1){
+			document.getElementById('quantity').value = 1
+			alert("Quantity Should be a Positive Integer")
+		}
+		else{
+			document.getElementById('price').value = qty*currentPrice
+		}
+		};
+
+
+</script>
+
+</body>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+  	var message = /*[[${message}]]*/ 'default';
+    console.log(message);
+
+/*]]>*/
+ 
+ 
+ if(message == "alert"){
+		alert("Ticket Have been booked succesfully!");
+	}
+ 
+ </script>
+
+</html>

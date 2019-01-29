@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Theme Made By www.w3schools.com - No Copyright -->
+<title>Themepark Management</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link href="/css/analysis-page.css" rel="stylesheet" type="text/css">
+<link href="css/font-awesome/css/font-awesome.css" rel="stylesheet">
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+</head>
+<body id="myPage" data-spy="scroll" data-target=".navbar"
+	data-offset="60">
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#myPage">Themepark Management</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="/employee-info">Update Employee Info</a></li>
+					<li><a href="#"><span th:text="${loggedUserName}"
+							class="fa fa-user-circle fa-lg" aria-hidden="true"></span></a></li>
+					<li><a href="/logout"><span class="fa fa-power-off fa-lg"
+							aria-hidden="true">&nbsp logout</span></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="jumbotron text-center">
+		<h1>Themepark Manager View</h1>
+		<p>Analysis on sales data by various levels</p>
+	</div>
+
+	<div class="text-center" style="justify-content: center">
+		<div class="text-center">
+			<h2>Choose Your Category of Analysis</h2>
+			<div class="btn-group" role="group">
+				<button onClick="onTicketsSelected();" id="ticketSales"
+					type="button" class="btn btn-secondary">Ticket Sales</button>
+				<button onClick="onItemsSelected();" id="itemSales" type="button"
+					class="btn btn-secondary">Item Sales</button>
+			</div>
+		</div>
+
+		<br /> <input type="date" name="startDate" id="startDate" /> <input
+			type="date" name="endDate" id="endDate" /> <br />
+		<div class="switch">
+			<label> Detailed View <input id="detailedCheckBox" type="checkbox"> <span
+				class="lever"></span>
+			</label>
+		</div>
+
+		<button onClick="onAnalyzeClicked()">Analyze</button>
+
+	</div>
+
+	<div id="analysis-result">
+	</div>
+
+
+	<footer class="container-fluid text-center">
+		<a href="#myPage" title="To Top"> <!--  <span><strong>......</strong></span> -->
+		</a>
+		<p>
+			Themepark Management App Made By <a href="https://canvas.uncc.edu"
+				title="Visit Canvas">Group 21</a>
+		</p>
+	</footer>
+
+</body>
+
+
+<script type="text/javascript">
+	
+	var analyzeParam = "tickets";
+	
+	const onTicketsSelected = () => {
+		analyzeParam = "tickets";
+	};
+	
+	const onItemsSelected = () => {
+		analyzeParam = "items";
+	};
+	
+	const displayTicketDayT = (startDate, endDate) => {
+		$.ajax({
+	        url: "/get-ticket-day-t",
+	        data: {"startDate":startDate, "endDate":endDate},
+	        type: 'GET',
+	        dataType: 'json', 
+	        success: function(res) {
+	            console.log(res);
+	            var tableString = "<table class='table'> <thead> <th>Sale Day</th> <th>Ticket Type</th> <th>Quanitity</th> <th>Sale Amount</th> </thead> <tbody>";
+	            
+	            res.map(item => {
+	            	if(item.ticketType.includes('INDIVIDUAL')){
+	            		tableString = tableString + "<tr class='active'>";
+	            	}
+	            	else if(item.ticketType.includes('SILVER')){
+	            		tableString = tableString + "<tr class='warning'>";
+	            	}
+	            	else if(item.ticketType.includes('GOLD')){
+	            		tableString = tableString + "<tr class='info'>";
+	            	}
+	            	else if(item.ticketType.includes('PLATINUM')){
+	            		tableString = tableString + "<tr class='success'>";
+	            	}
+	            	
+	            	tableString = tableString + "<td>" + item.saleDay + "</td>";
+	            	tableString = tableString + "<td>" + item.ticketType + "</td>";
+	            	tableString = tableString + "<td>" + item.quantity + "</td>";
+	            	tableString = tableString + "<td>" + item.totalAmount + "</td>";
+	            	tableString = tableString + "</tr>";
+	            });
+	            
+	            tableString = tableString + "</tbody> </table>";
+	            
+	            document.getElementById("analysis-result").innerHTML = tableString;
+	            
+	        }
+	    });
+	};
+	
+	const displayDayT = (startDate, endDate) => {
+		
+		$.ajax({
+	        url: "/get-day-t",
+	        data: {"startDate":startDate, "endDate":endDate},
+	        type: 'GET',
+	        dataType: 'json', 
+	        success: function(res) {
+	            console.log(res);
+	            var tableString = "<table class='table'> <thead> <th>Sale Day</th> <th>Sale Amount</th> </thead> <tbody>";
+	            
+	            res.map(item => {
+	            	tableString = tableString + "<tr class='active'>";
+	            	tableString = tableString + "<td>" + item.saleDay + "</td>";
+	            	tableString = tableString + "<td>" + item.totalAmount + "</td>";
+	            	tableString = tableString + "</tr>";
+	            });
+	            
+	            tableString = tableString + "</tbody> </table>";
+	            
+	            document.getElementById("analysis-result").innerHTML = tableString;
+	            
+	        }
+	    });
+		
+	};
+	
+	const displayItemDayI = (startDate, endDate) => {
+		
+		$.ajax({
+	        url: "/get-items-day-i",
+	        data: {"startDate":startDate, "endDate":endDate},
+	        type: 'GET',
+	        dataType: 'json', 
+	        success: function(res) {
+	            console.log(res);
+	            var tableString = "<table class='table'> <thead> <th>Sale Day</th> <th>Item Type</th> <th>Stall Name</th> <th>Sale Amount</th> </thead> <tbody>";
+	            
+	            res.map(item => {
+	            	console.log(item);
+	            	console.log(item.itemType);
+	            	if(item.itemType.includes('FOOD')){
+	            		tableString = tableString + "<tr class='active'>";
+	            	}
+	            	else{
+	            		tableString = tableString + "<tr class='warning'>";
+	            	}
+	            	            	
+	            	tableString = tableString + "<td>" + item.saleDay + "</td>";
+	            	tableString = tableString + "<td>" + item.itemType + "</td>";
+	            	tableString = tableString + "<td>" + item.stallName + "</td>";
+	            	tableString = tableString + "<td>" + item.totalAmount + "</td>";
+	            	tableString = tableString + "</tr>";
+	            });
+	            
+	            tableString = tableString + "</tbody> </table>";
+	            
+	            document.getElementById("analysis-result").innerHTML = tableString;
+	            
+	        }
+	    });
+		
+	};
+	
+	const displayDayI = (startDate, endDate) => {
+		
+		$.ajax({
+	        url: "/get-day-i",
+	        data: {"startDate":startDate, "endDate":endDate},
+	        type: 'GET',
+	        dataType: 'json', 
+	        success: function(res) {
+	            console.log(res);
+	            var tableString = "<table class='table'> <thead> <th>Sale Day</th> <th>Item Type</th> <th>Sale Amount</th> </thead> <tbody>";
+	            
+	            res.map(item => {
+	            	if(item.itemType.includes('FOOD')){
+	            		tableString = tableString + "<tr class='active'>";
+	            	}
+	            	else{
+	            		tableString = tableString + "<tr class='warning'>";
+	            	}
+	            	
+	            	tableString = tableString + "<td>" + item.saleDay + "</td>";
+	            	tableString = tableString + "<td>" + item.itemType + "</td>";
+	            	tableString = tableString + "<td>" + item.totalAmount + "</td>";
+	            	tableString = tableString + "</tr>";
+	            });
+	            
+	            tableString = tableString + "</tbody> </table>";
+	            
+	            document.getElementById("analysis-result").innerHTML = tableString;
+	            
+	        }
+	    });
+		
+	};
+
+
+	const onAnalyzeClicked = () => {
+		console.log("onAnalyzeClicked function");
+		var startDate = document.getElementById('startDate')
+		var endDate = document.getElementById('endDate')
+		
+		var d1 = Date.parse(startDate.value);
+		var d2 = Date.parse(endDate.value);
+		if (d1 > d2) {
+		    alert ("Entered Dates are incorrect!");
+		}
+		
+		if(document.getElementById("detailedCheckBox").checked){
+			if(analyzeParam === "tickets"){
+				displayTicketDayT(startDate.value, endDate.value);
+			}
+			else{
+				displayItemDayI(startDate.value, endDate.value);	
+			}
+		}
+		else{
+			if(analyzeParam === "tickets"){
+				displayDayT(startDate.value, endDate.value);
+			}
+			else{
+				displayDayI(startDate.value, endDate.value);
+			}
+		}
+		
+	};
+</script>
+
+</html>
+

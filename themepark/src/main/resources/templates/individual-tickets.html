@@ -6,9 +6,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
-<link href="/css/entry-tickets.css" rel="stylesheet" type="text/css">
+<link href="/css/individual-tickets.css" rel="stylesheet"
+	type="text/css">
 <link href="css/font-awesome/css/font-awesome.css" rel="stylesheet">
 <script src="/js/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet"
+	href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />
 <script src="/js/bootstrap.min.js"></script>
 </head>
 <body id="myPage" data-spy="scroll" data-target=".navbar"
@@ -38,9 +42,9 @@
 	</nav>
 
 	<div class="jumbotron text-center">
-		<h1>Entry Ticket Booking Service</h1>
-		<p>Choose an entry ticket, enter customer details to complete
-			entry level ticket booking</p>
+		<h1>Additional/Individual Ticket Booking Service</h1>
+		<p>Choose a ticket from the category, enter customer details to
+			complete entry level ticket booking</p>
 	</div>
 
 	<!-- Container (Pricing Section) -->
@@ -62,7 +66,9 @@
 						</p>
 						<div
 							th:each="item : ${#strings.arraySplit(element.value.RIDES, ',')}">
-							<p th:text="${item}"></p>
+							<span th:text="${item}"></span>&nbsp;<a
+								th:onclick="|showRideInfo('${item}')|" class="fa fa-info-circle"
+								aria-hidden="true"></a>
 						</div>
 					</div>
 					<div class="panel-footer">
@@ -80,36 +86,29 @@
 	<!-- Container (Contact Section) -->
 	<div id="booking" class="container-fluid bg-grey">
 		<h2 class="text-center">Ticket Booking</h2>
-		<form method="post" th:action="@{/book-entry-ticket}">
+		<form method="post" th:action="@{/book-individual-ticket}">
 			<div class="row">
-				<div class="col-sm-5 slideanim">
+				<div class="col-sm-6 slideanim">
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<input class="form-control" id="firstName" name="firstName"
-								placeholder="First Name" type="text" required>
+							<input class="form-control" id="ticketSaleId" name="ticketSaleId"
+								placeholder="Ticket Sale ID" type="text" />
 						</div>
-						<div class="col-sm-6 form-group">
-							<input class="form-control" id="lastName" name="lastName"
-								placeholder="Last Name" type="text" required>
-						</div>
+						<div>(OR)</div>
 					</div>
 					<div class="row">
 						<div class="col-sm-6 form-group">
 							<input class="form-control" id="mobileNumber" name="mobileNumber"
-								placeholder="Mobile Number" type="text" required>
-						</div>
-						<div class="col-sm-6 form-group">
-							<input onChange="updatePrice()" class="form-control" id="quantity" name="quantity"
-								placeholder="Quantity" type="Number" required>
+								placeholder="Mobile Number" type="text">
 						</div>
 					</div>
 				</div>
-				<div class="col-sm-7 slideanim">
+				<div class="col-sm-6 slideanim" style="margin-left:-14%	">
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<input class="form-control" id="ticketCategory"
-								name="ticketCategory" placeholder="Ticket Category" type="text"
-								required>
+							<input onChange="updatePrice()" class="form-control"
+								id="quantity" name="quantity" placeholder="Quantity"
+								type="Number" required>
 						</div>
 						<div class="col-sm-6 form-group">
 							<input class="form-control" id="price" name="price"
@@ -117,10 +116,14 @@
 						</div>
 					</div>
 					<!-- <textarea class="form-control" id="comments" name="comments" placeholder="Comment" rows="5"></textarea> -->
-					<br>
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<button class="btn btn-default pull-right" type="submit">Book</button>
+							<input class="form-control" id="ticketCategory"
+								name="ticketCategory" placeholder="Ticket Category" type="text"
+								required>
+						</div>
+						<div class="col-sm-6 form-group">
+							<button style="width:60%;" class="btn btn-primary" type="submit">Book</button>
 						</div>
 					</div>
 				</div>
@@ -132,14 +135,41 @@
 		<a href="#myPage" title="To Top"> <!--  <span><strong>......</strong></span> -->
 		</a>
 		<p>
-			Themepark Management App Made By <a href="#"
-				title="Database Project Team">Group 21</a>
+			Themepark Management App Made By <a href="https://canvas.uncc.edu/"
+				title="Visit Canvas">Group 21</a>
 		</p>
 	</footer>
+
+	<div id="dialog" title="Ride Information">
+		<table class="table">
+			<tbody>
+				<tr>
+					<th scope="row">Ride Name</th>
+					<td id="showRideName"></td>
+				</tr>
+				<tr>
+					<th scope="row">Ride Duration</th>
+					<td id="showRideDuration">Mark</td>
+				</tr>
+				<tr>
+					<th scope="row">Minumum People</th>
+					<td id="showMinPeople">Mark</td>
+				</tr>
+				<tr>
+					<th scope="row">Maximum People</th>
+					<td id="showMaxPeople">Mark</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 
 	<script>
 	var currentPrice;
 $(document).ready(function(){
+	
+	 jQuery( document ).ready( function() {
+		    jQuery( '#dialog' ).dialog( { 'autoOpen': false } );
+		  });
 
 	
   // Add smooth scrolling to all links in navbar + footer link
@@ -196,6 +226,28 @@ const addSelectedTicketCategory = (categoryName, price) => {
 			document.getElementById('price').value = qty*currentPrice
 		}
 		};
+		
+		const showRideInfo = (rideName) => {
+			console.log(rideName);
+			
+			$.ajax({
+		        url: "/ride-info",
+		        data: {"rideName":rideName},
+		        type: 'GET',
+		        dataType: 'json', 
+		        success: function(res) {
+		            console.log(res);
+		            //alert();
+		            //$("#dialog").dialog("open");
+		            document.getElementById('showRideName').innerHTML = res.rideName;
+		            document.getElementById('showRideDuration').innerHTML = res.rideLength;
+		            document.getElementById('showMinPeople').innerHTML = res.rideMin;
+		            document.getElementById('showMaxPeople').innerHTML = res.rideMax;
+		            jQuery( '#dialog' ).dialog('open');
+		        }
+		    });
+			
+			};
 
 
 </script>

@@ -13,6 +13,9 @@ public interface customerInfo extends CrudRepository<Customer, Long>{
 	@Query(value="select cust_id from customer where first_name= :firstName and last_name= :lastName and phone_number= :phoneNumber", nativeQuery=true)
 	public Integer getCustomerId(@Param("firstName") String firstName, @Param("lastName") String lastName, @Param("phoneNumber") String phoneNumber);
 	
+	@Query(value="select cust_id from customer where phone_number= :phoneNumber order by cust_id limit 1", nativeQuery=true)
+	public Integer getCustomerIdByMobileNumber(@Param("phoneNumber") String phoneNumber);
+	
 	
 
 }

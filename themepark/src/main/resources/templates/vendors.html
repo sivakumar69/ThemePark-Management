@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/css/bootstrap.min.css">
-<link href="/css/entry-tickets.css" rel="stylesheet" type="text/css">
+<link href="/css/vendor-page.css" rel="stylesheet" type="text/css">
 <link href="css/font-awesome/css/font-awesome.css" rel="stylesheet">
 <script src="/js/jquery.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
@@ -26,8 +26,8 @@
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar">
 				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#pricing">PRICE INFO</a></li>
-					<li><a id="bookingForm" href="#booking">TICKET BOOKING</a></li>
+					<li><a href="#pricing">CATEGORY INFO</a></li>
+					<li><a id="bookingForm" href="#booking">BILLING</a></li>
 					<li><a href="#"><span th:text="${loggedUserName}"
 							class="fa fa-user-circle fa-lg" aria-hidden="true"></span></a></li>
 					<li><a href="/logout"><span class="fa fa-power-off fa-lg"
@@ -38,89 +38,93 @@
 	</nav>
 
 	<div class="jumbotron text-center">
-		<h1>Entry Ticket Booking Service</h1>
-		<p>Choose an entry ticket, enter customer details to complete
-			entry level ticket booking</p>
+		<h1>Themepark Vendor Service</h1>
+		<p>Vendors description</p>
 	</div>
 
-	<!-- Container (Pricing Section) -->
 	<div id="pricing" class="container-fluid">
 		<div class="text-center">
-			<h2>Price Info</h2>
-			<h4>Choose a category of ticket</h4>
+			<h2>Choose Your Category</h2>
+			<div class="btn-group" role="group">
+				<button onClick="onFoodSelected();" id="foodSelection" type="button"
+					class="btn btn-secondary">FOOD</button>
+				<button onClick="onMerchandiseSelected();" id="merchandiseSelection"
+					type="button" class="btn btn-secondary">MERCHANDISE</button>
+			</div>
 		</div>
-		<div class="row slideanim">
-			<div class="col-sm-4 col-xs-12"
-				th:each="element : ${ticketsInformation}">
+
+		<br />
+
+
+		<div id="foodItems" class="row slideanim">
+			<div class="col-sm-4 col-xs-12" th:each="element : ${foodItems}">
 				<div class="panel panel-default text-center">
-					<div class="panel-heading">
-						<h1 th:text="${element.key}">element.key</h1>
-					</div>
-					<div class="panel-body">
-						<p>
-							<strong>Covers Following Rides</strong>
-						</p>
-						<div
-							th:each="item : ${#strings.arraySplit(element.value.RIDES, ',')}">
-							<p th:text="${item}"></p>
-						</div>
-					</div>
-					<div class="panel-footer">
-						<h3 th:text="${element.value.PRICE}">$19</h3>
-						<h4>per Individual</h4>
-						<button
-							th:onclick="|addSelectedTicketCategory('${element.key}', '${element.value.PRICE}')|"
-							class="btn btn-lg">ADD</button>
+					<div class="panel-heading"
+						th:onclick="|billSelectedItem('${element.stallName}', '${element.type}')|">
+						<h1 th:text="${element.stallName}">SUBWAY</h1>
 					</div>
 				</div>
 			</div>
+
 		</div>
+
+
+		<div id="merchandise" class="row slideanim">
+			<div class="col-sm-4 col-xs-12"
+				th:each="element : ${merchandiseItems}">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading"
+						th:onclick="|billSelectedItem('${element.stallName}', '${element.type}')|">
+						<h1 th:text="${element.stallName}">SUBWAY</h1>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
 	</div>
 
 	<!-- Container (Contact Section) -->
 	<div id="booking" class="container-fluid bg-grey">
-		<h2 class="text-center">Ticket Booking</h2>
-		<form method="post" th:action="@{/book-entry-ticket}">
+		<h2 class="text-center">Item Billing</h2>
+		<form method="post" th:action="@{/bill-items}">
 			<div class="row">
-				<div class="col-sm-5 slideanim">
+				<div class="col-sm-6 slideanim">
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<input class="form-control" id="firstName" name="firstName"
-								placeholder="First Name" type="text" required>
+							<input class="form-control" id="ticketSaleId" name="ticketSaleId"
+								placeholder="Ticket Sale ID" type="text" />
 						</div>
-						<div class="col-sm-6 form-group">
-							<input class="form-control" id="lastName" name="lastName"
-								placeholder="Last Name" type="text" required>
-						</div>
+						<div>(OR)</div>
 					</div>
 					<div class="row">
 						<div class="col-sm-6 form-group">
 							<input class="form-control" id="mobileNumber" name="mobileNumber"
-								placeholder="Mobile Number" type="text" required>
-						</div>
-						<div class="col-sm-6 form-group">
-							<input onChange="updatePrice()" class="form-control" id="quantity" name="quantity"
-								placeholder="Quantity" type="Number" required>
+								placeholder="Mobile Number" type="number">
 						</div>
 					</div>
 				</div>
-				<div class="col-sm-7 slideanim">
+				<div class="col-sm-6 slideanim" style="margin-left: -14%">
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<input class="form-control" id="ticketCategory"
-								name="ticketCategory" placeholder="Ticket Category" type="text"
+							<input class="form-control" id="itemCategory"
+								name="itemCategory" placeholder="Item Category" type="text"
 								required>
 						</div>
 						<div class="col-sm-6 form-group">
-							<input class="form-control" id="price" name="price"
-								placeholder="Price" type="text" required>
+							<input class="form-control"
+								id="stallName" name="stallName" placeholder="Stall Name" 
+								required>
 						</div>
 					</div>
-					<!-- <textarea class="form-control" id="comments" name="comments" placeholder="Comment" rows="5"></textarea> -->
-					<br>
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<button class="btn btn-default pull-right" type="submit">Book</button>
+							<input class="form-control" id="amount" name="amount"
+								placeholder="Amount" type="text" required>
+						</div>
+						<div class="col-sm-6 form-group">
+							<button style="width: 60%;" class="btn btn-primary" type="submit">Bill</button>
 						</div>
 					</div>
 				</div>
@@ -132,8 +136,8 @@
 		<a href="#myPage" title="To Top"> <!--  <span><strong>......</strong></span> -->
 		</a>
 		<p>
-			Themepark Management App Made By <a href="#"
-				title="Database Project Team">Group 21</a>
+			Themepark Management App Made By <a href="https://canvas.uncc.edu"
+				title="Visit Canvas">Group 21</a>
 		</p>
 	</footer>
 
@@ -177,25 +181,30 @@ $(document).ready(function(){
 })
 
 
-const addSelectedTicketCategory = (categoryName, price) => {
-	console.log(categoryName+' '+price)
-	document.getElementById('ticketCategory').value = categoryName
-	document.getElementById('quantity').value = 1
-	document.getElementById('price').value = price
-	currentPrice = price
-	$('#bookingForm').click();
-	};
-	
-	const updatePrice = () => {
-		var qty = document.getElementById('quantity').value
-		if(qty < 1){
-			document.getElementById('quantity').value = 1
-			alert("Quantity Should be a Positive Integer")
-		}
-		else{
-			document.getElementById('price').value = qty*currentPrice
-		}
+	const billSelectedItem = (stallName, itemCategory) => {
+		console.log(stallName+' '+itemCategory)
+		document.getElementById('itemCategory').value = itemCategory
+		document.getElementById('stallName').value = stallName
+		$('#bookingForm').click();
 		};
+		
+		const onFoodSelected = () => {
+			console.log("OnFoodSelected function");
+			var merchandiseDiv = document.getElementById('merchandise')
+			var foodDiv = document.getElementById('foodItems')
+			merchandiseDiv.style.display = "none";
+			foodDiv.style.display = "block";
+			
+			};
+			
+		const onMerchandiseSelected = () => {
+			console.log("OnMerchandiseSelected function");
+			var merchandiseDiv = document.getElementById('merchandise')
+			var foodDiv = document.getElementById('foodItems')
+			merchandiseDiv.style.display = "block";
+			foodDiv.style.display = "none";
+			
+			};
 
 
 </script>

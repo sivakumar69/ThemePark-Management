@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Theme Made By www.w3schools.com - No Copyright -->
+<title>Themepark Management</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link href="/css/analysis-page.css" rel="stylesheet" type="text/css">
+<link href="css/font-awesome/css/font-awesome.css" rel="stylesheet">
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+</head>
+<body id="myPage" data-spy="scroll" data-target=".navbar"
+	data-offset="60">
+
+	<nav class="navbar navbar-default navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse"
+					data-target="#myNavbar">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#myPage">Themepark Management</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#"><span th:text="${loggedUserName}"
+							class="fa fa-user-circle fa-lg" aria-hidden="true"></span></a></li>
+					<li><a href="/logout"><span class="fa fa-power-off fa-lg"
+							aria-hidden="true">&nbsp logout</span></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	
+	<div class="jumbotron text-center">
+		<h1>Themepark Manager View</h1>
+		<p>Update Employee Information Page</p>
+	</div>
+	
+	<div style="justify-content:center; display:flex; flex-grow:1;" class="text-center">
+      <label for="inputState">Select Employee Email to Update</label> &nbsp; &nbsp;
+      <select style="max-width:25%" onChange = "onOptionSelected(event)" id="inputState" class="form-control">
+      	<option>Select Employee Email</option>
+        <option  th:each="element : ${emailsList}" th:value="${element}" th:text="${element}"></option>
+      </select>
+	</div>
+	
+	<div style="margin-top:10px;" class="text-center" id="employeeInformation">
+		
+	</div>
+	
+	<footer class="container-fluid text-center">
+		<a href="#myPage" title="To Top">
+		</a>
+		<p>
+			Themepark Management App Made By <a href="https://canvas.uncc.edu"
+				title="Visit Canvas">Group 21</a>
+		</p>
+	</footer>
+
+</body>
+
+<script type="text/javascript">
+	const onOptionSelected = (e) => {
+		console.log(e.target.value);
+		
+		$.ajax({
+	        url: "/get-employee-info",
+	        data: {"email":e.target.value},
+	        type: 'GET',
+	        dataType: 'json', 
+	        success: function(res) {
+	            console.log(res);
+	            
+	            var infoString = "";
+	            infoString = infoString + "<label>E-Mail</label> <input type='text' id='email' value='"+ res.email + "' readonly/>";
+	            infoString = infoString + "&nbsp; <label>First Name</label> <input type='text' id='firstName' value='"+ res.firstName + "'/>";
+	            infoString = infoString + "&nbsp; <label>Last Name</label> <input type='text' id='lastName' value='"+ res.lastName + "'/> <br /><br />";
+	            infoString = infoString + "<label>Address Line 1</label> <input type='text' id='addressLine1' value='"+ res.addressLine1 + "'/>";
+	            infoString = infoString + "&nbsp;<label>Address Line 2</label> <input type='text' id='addressLine2' value='"+ res.addressLine2 + "'/> <br /><br />";
+	            infoString = infoString + "<label>City</label> <input type='text' id='city' value='"+ res.city + "'/>";
+	            infoString = infoString + "&nbsp;<label>State</label> <input type='text' id='state' value='"+ res.state + "'/>";
+	            infoString = infoString + "&nbsp;<label>Zip Code</label> <input type='text' id='zipcode' value='"+ res.zipcode + "'/>";
+	            infoString = infoString + "&nbsp;<label>Phone Number</label> <input type='text' id='phoneNumber' value='"+ res.phoneNumber + "'/>";
+	            
+	            infoString = infoString + "<br /><br /> <button onClick='UpdateEmployeeDetails(event)'>Update</button>";
+	            
+	            document.getElementById("employeeInformation").innerHTML = infoString;
+	            
+	        }
+	    });
+		
+	};
+	
+	const UpdateEmployeeDetails = (e) => {
+		
+		var email = document.getElementById("email").value;
+		var firstName = document.getElementById("firstName").value;
+		var lastName = document.getElementById("lastName").value;
+		var addressLine1 = document.getElementById("addressLine1").value;
+		var addressLine2 = document.getElementById("addressLine2").value;
+		var city = document.getElementById("city").value;
+		var state = document.getElementById("state").value;
+		var zipcode = document.getElementById("zipcode").value;
+		var phoneNumber = document.getElementById("phoneNumber").value;
+		
+		var req = {"email":email, "firstName":firstName, "lastName":lastName, "addressLine1":addressLine1, "addressLine2":addressLine2,"city":city, "state":state, "zipcode":zipcode, "phoneNumber":phoneNumber};
+		console.log(req);
+		
+		$.ajax({
+	        url: "/update-employee-info",
+	        data: req,
+	        type: 'GET',
+	        dataType: 'json', 
+	        success: function(res) {
+	            console.log(res);
+	        }
+	        
+		});
+		
+	};
+</script>
+
+</html>

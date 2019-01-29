@@ -14,5 +14,8 @@ public interface RideInfo extends CrudRepository<Ride, Long> {
 	
 	@Query(value="select group_concat(name) from ride where ride_id in (select ride_id from ride_ticket where ticket_id = :ticketId)", nativeQuery=true)
 	public String getRidesStringByID(@Param("ticketId") int ticketId);
+	
+	@Query(value="select * from ride where name= :rideName", nativeQuery=true)
+	public Ride getRidesInfoByRideName(@Param("rideName") String rideName);
 
 }

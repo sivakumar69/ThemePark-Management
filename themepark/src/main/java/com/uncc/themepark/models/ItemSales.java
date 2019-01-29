@@ -8,8 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "ticket_sales")
-public class TicketSales {
+@Table(name = "item_sales")
+public class ItemSales {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,18 +17,24 @@ public class TicketSales {
 	int salesId;
 	@Column(name = "cust_id")
 	int custId;
+	@Column(name = "item_id")
+	int itemId;
 	@Column(name = "employee_id")
 	String employeeId;
-	@Column(name = "ticket_id")
-	int ticketId;
-	@Column(name = "amount")
 	int amount;
-	@Column(name = "quantity")
-	int quantity;
-	@Column(name = "sale_date")
-	String sale_date;
+	@Column(name="sale_date")
+	String saleDate;
 
-	public TicketSales() {
+	public String getSaleDate() {
+		return saleDate;
+	}
+
+	public void setSaleDate(String saleDate) {
+		this.saleDate = saleDate;
+	}
+
+	public ItemSales() {
+
 	}
 
 	public int getSalesId() {
@@ -47,36 +53,12 @@ public class TicketSales {
 		this.custId = custId;
 	}
 
-	public int getTicketId() {
-		return ticketId;
+	public int getItemId() {
+		return itemId;
 	}
 
-	public void setTicketId(int ticketId) {
-		this.ticketId = ticketId;
-	}
-
-	public int getAmount() {
-		return amount;
-	}
-
-	public void setAmount(int amount) {
-		this.amount = amount;
-	}
-
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
-	}
-
-	public String getSale_date() {
-		return sale_date;
-	}
-
-	public void setSale_date(String sale_date) {
-		this.sale_date = sale_date;
+	public void setItemId(int itemId) {
+		this.itemId = itemId;
 	}
 
 	public String getEmployeeId() {
@@ -86,7 +68,13 @@ public class TicketSales {
 	public void setEmployeeId(String employeeId) {
 		this.employeeId = employeeId;
 	}
-	
-	
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		this.amount = amount;
+	}
 
 }
